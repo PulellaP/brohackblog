@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Articles written by our tech community.</title>
+{% endblock %}
+
+{% block body %}
+  {% for post in posts %}
+    <div>
+      <div>
+        <h4>
+          {{ post.title }}
+        </h4>
+      </div>
+      <div>
+        <h6>
+          {{ post.author }}
+        </h6>
+      </div>
+    </div>
+    <hr>
+  {% endfor %}
+{% endblock %}

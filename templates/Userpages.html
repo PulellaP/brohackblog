@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title> {{ page_name }} </title>
+{% endblock %}
+
+
+{% block body %}
+  <h2> {{username}}'s articles:</h2>
+  {% for post in Users_Articles %}
+    <div>
+      <div>
+        <h4>
+          {{ post.title }}
+        </h4>
+      </div>
+      <div>
+        <h6>
+          {{ post.author }}
+        </h6>
+      </div>
+    </div>
+    <hr>
+  {% endfor %}
+
+{% endblock %}
