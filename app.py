@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from datetime import datetime
 from flask_dance.contrib.github import make_github_blueprint, github
 from flask_login import UserMixin, current_user, LoginManager, login_required, login_user, logout_user
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
 app.config['SECRET_KEY'] = 'thisissupposedtobesecret'
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
 login_manager = LoginManager(app)
 
 class User(UserMixin, db.Model):
@@ -27,6 +29,12 @@ class Article(db.Model):
     title = db.Column(db.String(250), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+class ArticleSchema(ma.ModelSchema):
+    class Meta:
+        model = Article
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -70,9 +78,10 @@ def github_logged_in(blueprint, token):
 
 @app.route('/')
 def index():
-    page_name = 'Latest Posts'
     all_posts = Article.query.order_by(Article.date_time).all()
-    return render_template('index.html', page_name=page_name, posts = all_posts)
+    posts_schema = ArticleSchema(many=True)
+    output = posts_schema.dump(all_posts)
+    return jsonify({'Articles' : output})
 
 @app.route('/logout')
 @login_required
@@ -98,7 +107,7 @@ def Write_Article():
     else:
         return render_template('Write-Article.html', page_name = 'New Post')
 
-@app.route('/users/<string:users>')
+@app.route('/authors/<string:users>')
 def show_users_page(users):
     account_user = User.query.filter_by(username=users).first()
     id = account_user.id
@@ -106,6 +115,15 @@ def show_users_page(users):
     page_name = f'{username}\'s homepage'
     user_articles = Article.query.filter_by(author=username).all()
     return render_template('Userpages.html', page_name = page_name, Users_Articles=user_articles, username = username)
+
+@app.route('/articles/<int:identification>')
+def show_article(identification):
+    article = Article.query.filter_by(id=identification).first()
+    title = article.title
+    author = article.author
+    content = article.content
+    time_of_post = article.date_time
+    return render_template('display.html', page_name=title, author=author, content=content, time_of_post=time_of_post)
 
 
 if __name__ == "__main__":
