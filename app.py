@@ -35,7 +35,6 @@ class ArticleSchema(ma.ModelSchema):
         model = Article
 
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -89,23 +88,22 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@app.route('/Write-Article', methods=['GET', 'POST'])
+@app.route('/Write-Article', methods=['POST'])
 @login_required
 def Write_Article():
-    if request.method == 'POST':
-        account_info = github.get('/user')
-        account_info_json = account_info.json()
-        author = account_info_json['login']
-        post_title = request.form['title']
-        post_content = request.form['content']
-        new_post = Article(author = author, title = post_title, content = post_content)
-        db.session.add(new_post)
-        db.session.commit()
 
-        return redirect('/')
+    account_info = github.get('/user')
+    account_info_json = account_info.json()
+    author = account_info_json['login']
+    post_title = request.form['title']
+    post_content = request.form['content']
+    new_post = Article(author = author, title = post_title, content = post_content)
+    db.session.add(new_post)
+    db.session.commit()
 
-    else:
-        return render_template('Write-Article.html', page_name = 'New Post')
+    return jsonify({'Status' : 'Success'})
+
+
 
 @app.route('/authors/<string:users>')
 def show_users_page(users):

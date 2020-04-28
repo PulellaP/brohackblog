@@ -8,9 +8,11 @@
   {% for post in posts %}
     <div>
       <div>
-        <h4>
-          {{ post.title }}
-        </h4>
+        <a href="/articles/{{ post.id }}">
+          <h4>
+            {{ post.title }}
+          </h4>
+        </a>
       </div>
       <div>
         <h6>
