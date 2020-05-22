@@ -16,6 +16,8 @@ login_manager = LoginManager(app)
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(250), unique=True)
+    is_author = db.Column(db.Boolean, default=False, server_default="false")
+
 
 class OAuth(OAuthConsumerMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
@@ -38,7 +40,7 @@ github_blueprint = make_github_blueprint(client_id='51f9ff7ae3641081141f', clien
 
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
 
-@app.route('/github')
+@app.route('/login')
 def github_login():
     if not github.authorized:
         return redirect(url_for('github.login'))
@@ -46,7 +48,15 @@ def github_login():
     account_info = github.get('/user')
     account_info_json = account_info.json()
 
-    return f"<h1>Your github name is {account_info_json['login']}</h1>"
+    account_user = User.query.filter_by(username=account_info_json['login']).first()
+    if account_info_json['login'] == 'PulellaP' or 'RosarioPulella':
+        account_user.is_author = True
+        db.session.commit()
+
+    if account_user.is_author == True:
+        return f"<h1>Your github name is {account_info_json['login']} and you are an author</h1>"
+    else:
+        return f"<h1>Your github name is {account_info_json['login']}</h1>"
 
 @oauth_authorized.connect_via(github_blueprint)
 def github_logged_in(blueprint, token):
@@ -68,22 +78,22 @@ def github_logged_in(blueprint, token):
         login_user(user)
 
 
-@app.route('/')
-def index():
+@app.route('/home/<int:page_num>')
+def index(page_num):
     page_name = 'Latest Posts'
-    all_posts = Article.query.order_by(Article.date_time).all()
-    return render_template('index.html', page_name=page_name, posts = all_posts)
+    post_page = Article.query.paginate(per_page=5, page=page_num, error_out=True)
+    return render_template('index.html', threads=post_page)
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('index', page_num=1))
 
 @app.route('/Write-Article', methods=['GET', 'POST'])
 @login_required
 def Write_Article():
-    if request.method == 'POST':
+    if request.method == 'POST' and User.is_author == True:
         account_info = github.get('/user')
         account_info_json = account_info.json()
         author = account_info_json['login']
@@ -106,6 +116,8 @@ def show_users_page(users):
     page_name = f'{username}\'s homepage'
     user_articles = Article.query.filter_by(author=username).all()
     return render_template('Userpages.html', page_name = page_name, Users_Articles=user_articles, username = username)
+
+
 
 
 if __name__ == "__main__":
