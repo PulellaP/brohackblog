@@ -78,11 +78,15 @@ def github_logged_in(blueprint, token):
         login_user(user)
 
 
+@app.route('/')
+def landing():
+    return redirect(url_for('index', page_num=1))
+
 @app.route('/home/<int:page_num>')
 def index(page_num):
-    page_name = 'Latest Posts'
+    page_name = 'Articles'
     post_page = Article.query.paginate(per_page=5, page=page_num, error_out=True)
-    return render_template('index.html', threads=post_page)
+    return render_template('index.html', post_page=post_page)
 
 @app.route('/logout')
 @login_required
@@ -93,7 +97,7 @@ def logout():
 @app.route('/Write-Article', methods=['GET', 'POST'])
 @login_required
 def Write_Article():
-    if request.method == 'POST' and User.is_author == True:
+    if request.method == 'POST' and current_user.is_author == True:
         account_info = github.get('/user')
         account_info_json = account_info.json()
         author = account_info_json['login']
@@ -103,7 +107,7 @@ def Write_Article():
         db.session.add(new_post)
         db.session.commit()
 
-        return redirect('/')
+        return redirect(url_for('index', page_num=1))
 
     else:
         return render_template('Write-Article.html', page_name = 'New Post')
@@ -117,7 +121,10 @@ def show_users_page(users):
     user_articles = Article.query.filter_by(author=username).all()
     return render_template('Userpages.html', page_name = page_name, Users_Articles=user_articles, username = username)
 
-
+@app.route('/articles/<int:id>')
+def display_article(id):
+    article = Article.query.filter_by(article_id=id).first()
+    return render_template('article.html', title = article.title, content = article.content, author = article.author)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-  {% for thread in threads.items %}
+  {% for post in post_page.items %}
     <div>
       <div>
         <h4>
@@ -19,5 +19,12 @@
       </div>
     </div>
     <hr>
+  {% endfor %}
+  {% for page in post_page.iter_pages() %}
+    {% if page %}
+      <a href="{{ url_for('index', page_num=page) }}"> {{ page }} </a>
+    {% else %}
+      ...
+    {% endif %}
   {% endfor %}
 {% endblock %}
