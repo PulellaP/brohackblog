@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-<form action="/Write-Article" method="POST">
+<form action="/Write-Article" method="POST" enctype="multipart/form-data">
   <label for="title">
     <h5>
       Title:
@@ -21,6 +21,9 @@
     <textarea class="form-control" name="content" id="content" placeholder="Enter Content" aria-label="Enter Content" rows="3"></textarea>
   </div>
   <br>
+  Select image to upload:
+    <input type="file" name="myImage" id="fileToUpload">
+    <br>
   <input type="submit" value="Post">
 </form>
 

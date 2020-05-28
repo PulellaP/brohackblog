@@ -103,6 +103,7 @@ def Write_Article():
         author = account_info_json['login']
         post_title = request.form['title']
         post_content = request.form['content']
+        file = request.files['myImage']
         new_post = Article(author = author, title = post_title, content = post_content)
         db.session.add(new_post)
         db.session.commit()
