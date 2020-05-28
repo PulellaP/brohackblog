@@ -6,6 +6,7 @@ from flask_login import UserMixin, current_user, LoginManager, login_required, l
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
@@ -103,7 +104,8 @@ def Write_Article():
         author = account_info_json['login']
         post_title = request.form['title']
         post_content = request.form['content']
-        file = request.files['myImage']
+        if request.files:
+            file = request.files['myImage']
         new_post = Article(author = author, title = post_title, content = post_content)
         db.session.add(new_post)
         db.session.commit()
