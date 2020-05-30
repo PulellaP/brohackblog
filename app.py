@@ -11,8 +11,12 @@ import os
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
 app.config['SECRET_KEY'] = 'thisissupposedtobesecret'
+app.config['IMAGE_UPLOADS'] = os.getcwd()+'/static/images'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
+
+if os.path.isdir(app.config['IMAGE_UPLOADS']) == False:
+    os.mkdir(app.config['IMAGE_UPLOADS'])
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -106,6 +110,10 @@ def Write_Article():
         post_content = request.form['content']
         if request.files:
             file = request.files['myImage']
+            directory = os.path.join(app.config['IMAGE_UPLOADS'], author)
+            if os.path.isdir(directory) == False:
+                os.mkdir(directory)
+            file.save(os.path.join(app.config['IMAGE_UPLOADS'], author, file.filename))
         new_post = Article(author = author, title = post_title, content = post_content)
         db.session.add(new_post)
         db.session.commit()
