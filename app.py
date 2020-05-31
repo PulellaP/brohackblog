@@ -6,17 +6,31 @@ from flask_login import UserMixin, current_user, LoginManager, login_required, l
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.utils import secure_filename
 import os
+import sys
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
 app.config['SECRET_KEY'] = 'thisissupposedtobesecret'
 app.config['IMAGE_UPLOADS'] = os.getcwd()+'/static/images'
+app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG']
+app.config['IMAGE_SIZE_LIMIT'] = 1603900
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
 if os.path.isdir(app.config['IMAGE_UPLOADS']) == False:
     os.mkdir(app.config['IMAGE_UPLOADS'])
+
+def allowed_image(filename):
+    if not '.' in filename:
+        return False
+    ext = filename.rsplit('.', 1)[1]
+
+    if ext.upper() in app.config['ALLOWED_IMAGE_EXTENSIONS']:
+        return True
+    else:
+        return False
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -110,10 +124,20 @@ def Write_Article():
         post_content = request.form['content']
         if request.files:
             file = request.files['myImage']
-            directory = os.path.join(app.config['IMAGE_UPLOADS'], author)
-            if os.path.isdir(directory) == False:
-                os.mkdir(directory)
-            file.save(os.path.join(app.config['IMAGE_UPLOADS'], author, file.filename))
+            if file.filename == '':
+                return render_template('Write-Article.html', page_name = 'New Post', alert = 'Image must have a filename')
+            if allowed_image(file.filename) == False:
+                return render_template('Write-Article.html', page_name = 'New Post', alert = 'Invalid filename')
+
+            else:
+                if sys.getsizeof(file) > app.config['IMAGE_SIZE_LIMIT']:
+                    alertvar = 'Image size limit is ' + str(app.config['IMAGE_SIZE_LIMIT'])
+                    return render_template('Write-Article.html', page_name = 'New Post', alert = alertvar)
+                filename = secure_filename(file.filename)
+                directory = os.path.join(app.config['IMAGE_UPLOADS'], author)
+                if os.path.isdir(directory) == False:
+                    os.mkdir(directory)
+                file.save(os.path.join(directory, filename))
         new_post = Article(author = author, title = post_title, content = post_content)
         db.session.add(new_post)
         db.session.commit()

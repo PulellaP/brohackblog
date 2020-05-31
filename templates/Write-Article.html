@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block body %}
+{% if alert %}
+  <div class="alert alert-danger" role="alert">
+    {{ alert }}
+  </div>
+{% endif %}
 <form action="/Write-Article" method="POST" enctype="multipart/form-data">
   <label for="title">
     <h5>
