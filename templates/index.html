@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Articles written by our tech community.</title>
+<title>Tech articles written by the git brothers.</title>
 {% endblock %}
 
 {% block body %}
@@ -9,12 +9,14 @@
     <div>
       <div>
         <h4>
-          {{ post.title }}
+          <a href="{{url_for('display_article', id=post.article_id)}}" class="text-dark">
+            {{ post.title }}
+          </a>
         </h4>
       </div>
       <div>
         <h6>
-          {{ post.author }}
+          By: {{ post.author }}
         </h6>
       </div>
     </div>

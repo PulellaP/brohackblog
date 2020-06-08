@@ -7,5 +7,5 @@
 {% block body %}
 <h1> {{title}} </h1>
 <h6> By: {{author}} </h6>
-<p> {{content}} </p>
+<p> {{ content | safe }} </p>
 {% endblock %}

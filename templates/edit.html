@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title> {{title}} </title>
+{% endblock %}
+
+{% block body %}
+<h1>Edit {{title}} By: {{author}} </h1>
+<div class="form-group">
+  <label for="content">
+    <h5>
+      Post:
+    </h5>
+  </label>
+  <form action="/articles/{{id}}/edit" method="POST" enctype="multipart/form-data">
+    <textarea class="form-control" name="content" id="content" placeholder="{{ content }}" aria-label="Enter Content" rows="3"> {{content}}</textarea>
+</div>
+<br>
+Select image to upload:
+  <input type="file" name="myImage" id="fileToUpload">
+  <br>
+<input type="submit" value="Post">
+</form>
+{% endblock %}
