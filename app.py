@@ -107,7 +107,7 @@ def index(page_num):
     page_name = 'Articles'
     #post_page = Article.query.paginate(per_page=5, page=page_num, error_out=True)
     post_page = Article.query.order_by(Article.article_id.desc()).paginate(per_page=5, page=page_num, error_out=True)
-    return render_template('index.html', post_page=post_page)
+    return render_template('index.html', post_page=post_page, current_user= current_user)
 
 @app.route('/logout')
 @login_required
@@ -174,7 +174,8 @@ def show_users_page(users):
 def display_article(id):
     article = Article.query.filter_by(article_id=id).first()
     md = Markdown()
-    return render_template('article.html', title = article.title, content = md.convert(article.content), author = article.author)
+    head_image = article.head_image
+    return render_template('article.html', title = article.title, content = md.convert(article.content), author = article.author, head_image = head_image)
 
 
 if __name__ == "__main__":

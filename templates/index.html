@@ -6,15 +6,24 @@
 
 {% block body %}
   {% for post in post_page.items %}
-    <div>
-      <div>
+    <div class="container">
+      <div class="row justify-content-center">
+        {% if post.head_image %}
+          <div class="h-50 w-50 d-flex">
+            <img src="{{post.head_image}}" alt="head image" class="img-thumbnail">
+          </div>
+        {% else %}
+
+        {% endif %}
+      </div>
+      <div class="row justify-content-center">
         <h4>
           <a href="{{url_for('display_article', id=post.article_id)}}" class="text-dark">
             {{ post.title }}
           </a>
         </h4>
       </div>
-      <div>
+      <div class="row justify-content-center">
         <h6>
           By: {{ post.author }}
         </h6>

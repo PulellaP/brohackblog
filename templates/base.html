@@ -12,18 +12,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <a class="navbar-brand" href="/">Git bros</a>
+          {% if current_user %}
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
-              <a class="nav-link" href="/login">Login<span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="https://github.com/{{current_user.username}}">{{current_user.username}}</a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="/Write-Article">Write</a>
             </li>
+          {% else %}
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="/login">Login<span class="sr-only">(current)</span></a>
+            </li>
           </ul>
-          <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-          </form>
+          {% endif %}
         </div>
       </nav>
 
@@ -34,11 +37,9 @@
       <h1>{{ page_name }}</h1>
       <br>
       <main role="main">
-        <div class="jumbotron">
           <div class="col-sm-8 mx-auto">
             {% block body %} {% endblock %}
           </div>
-        </div>
       </main>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
