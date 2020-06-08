@@ -137,7 +137,8 @@ def Write_Article():
         #        if os.path.isdir(directory) == False:
         #            os.mkdir(directory)
         #        file.save(os.path.join(directory, filename))
-        new_post = Article(author = author, title = post_title, content = post_content)
+        image_link = request.form['image']
+        new_post = Article(author = author, title = post_title, content = post_content, head_image=image_link)
         db.session.add(new_post)
         db.session.commit()
 
