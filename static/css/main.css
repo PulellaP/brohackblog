@@ -1,0 +1,30 @@
+h1 {
+  font-family: 'Press Start 2P';
+  color: #39FF14;
+}
+
+.main-logo {
+  font-family: 'Press Start 2P';
+  color: #39FF14;
+}
+
+p {
+  font-family: 'Source Code Pro', monospace;
+  color: #39FF14;
+}
+
+.sourcecodefont {
+  font-family: 'Source Code Pro', monospace;
+}
+
+nav {
+  background-color: black;
+}
+
+body {
+  background-color: black;
+}
+
+.greenify {
+  color: #39FF14;
+}
