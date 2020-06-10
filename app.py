@@ -43,6 +43,11 @@ class OAuth(OAuthConsumerMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User)
 
+Topic_Article_join = db.Table('Topic_Article_join',
+    db.Column('article_id', db.Integer, db.ForeignKey('article.article_id')),
+    db.Column('topic_id', db.Integer, db.ForeignKey(topic.topic_id))
+    )
+
 class Article(db.Model):
     article_id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(250), db.ForeignKey(User.username))
@@ -50,6 +55,11 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     head_image = db.Column(db.String(500))
+    joins = db.relationship('Topics', secondary=Topic_Article_join, backref= db.backref('subscribers', lazy='dynamic'))
+
+class Topics(db.Model):
+    topic_id = db.Column(db.Integer, primary_key=True)
+    topic_name = db.Column(db.String(20))
 
 @login_manager.user_loader
 def load_user(user_id):
