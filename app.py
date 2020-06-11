@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from markdown2 import Markdown
 import os
 import sys
+import re
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
@@ -45,7 +46,7 @@ class OAuth(OAuthConsumerMixin, db.Model):
 
 Topic_Article_join = db.Table('Topic_Article_join',
     db.Column('article_id', db.Integer, db.ForeignKey('article.article_id')),
-    db.Column('topic_id', db.Integer, db.ForeignKey(topic.topic_id))
+    db.Column('topic_id', db.Integer, db.ForeignKey('topics.topic_id'))
     )
 
 class Article(db.Model):
@@ -134,22 +135,19 @@ def Write_Article():
         author = account_info_json['login']
         post_title = request.form['title']
         post_content = request.form['content']
-        #if request.files:
-        #    file = request.files['myImage']
-        #    if file.filename == '':
-        #        return render_template('Write-Article.html', page_name = 'New Post', alert = 'Image must have a filename')
-        #    if allowed_image(file.filename) == False:
-        #        return render_template('Write-Article.html', page_name = 'New Post', alert = 'Invalid filename')
-        #
-        #    else:
-        #        filename = secure_filename(file.filename)
-        #        directory = os.path.join(app.config['IMAGE_UPLOADS'], author)
-        #        if os.path.isdir(directory) == False:
-        #            os.mkdir(directory)
-        #        file.save(os.path.join(directory, filename))
+        subjects = re.split('::', request.form['subjects'])
         image_link = request.form['image']
         new_post = Article(author = author, title = post_title, content = post_content, head_image=image_link)
         db.session.add(new_post)
+        for x in subjects:
+            single_subject = Topics.query.filter_by(topic_name=x).all()
+            if single_subject == '':
+                db.session.add(Topics(topic_name = x))
+                x.subscribers.append(new_post)
+
+            else:
+                x.subscribers.append(new_post)
+
         db.session.commit()
 
         return redirect(url_for('index', page_num=1))

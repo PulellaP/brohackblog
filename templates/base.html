@@ -14,7 +14,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <a class="navbar-brand main-logo" href="/">Git Bros</a>
-          {% if current_user %}
+          {% if current_user.is_author == true %}
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
               <a class="nav-link sourcecodefont greenify" href="https://github.com/{{current_user.username}}">{{current_user.username}}</a>
@@ -22,6 +22,7 @@
             <li class="nav-item active">
               <a class="nav-link sourcecodefont greenify" href="/Write-Article">Write</a>
             </li>
+          </ul>
           {% else %}
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
