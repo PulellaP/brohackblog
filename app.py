@@ -9,12 +9,13 @@ from flask_dance.consumer import oauth_authorized
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.utils import secure_filename
 from markdown2 import Markdown
+from config import database_string, github_client_secret, github_client_id
 import os
 import sys
 import re
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = database_string
 app.config['SECRET_KEY'] = os.urandom(16)
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -56,7 +57,7 @@ def load_user(user_id):
 
 make_github_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
 
-github_blueprint = make_github_blueprint(client_id='51f9ff7ae3641081141f', client_secret='063ab0b5f12d7dd73c4b39e8f889b65b9218ded1')
+github_blueprint = make_github_blueprint(client_id=github_client_id, client_secret=github_client_secret)
 
 app.register_blueprint(github_blueprint, url_prefix='/github_login')
 
