@@ -10,7 +10,7 @@
       <div class="row justify-content-center">
         {% if post.head_image %}
           <div class="h-50 w-50 d-flex">
-            <img src="{{post.head_image}}" alt="head image" class="img-thumbnail">
+            <img src="{{post.head_image}}" alt="head image">
           </div>
         {% else %}
 
@@ -18,19 +18,38 @@
       </div>
       <div class="row justify-content-center">
         <h4>
-          <a href="{{url_for('display_article', id=post.article_id)}}" class="text-dark">
+          <a href="{{url_for('display_article', id=post.article_id)}}" class="headings">
             {{ post.title }}
           </a>
         </h4>
       </div>
-      <div class="row justify-content-center">
-        <h6>
+      <div class="row justify-content-center greenify sourcecodefont">
+        <p>
           By: {{ post.author }}
-        </h6>
+        </p>
       </div>
+      <div class="row justify-content-center greenify sourcecodefont">
+
+        <p>
+          {% for Top in post.topics %}
+            {{ Top.topic_name }}
+          {% endfor %}
+        </p>
+
+      </div>
+      <div class="row justify-content-center greenify sourcecodefont">
+        <p>
+          {{ post.date_time }}
+        </p>
+      </div>
+
+
     </div>
+
+
     <hr>
   {% endfor %}
+    <div class="row justify-content-center">
   {% for page in post_page.iter_pages() %}
     {% if page %}
       <a href="{{ url_for('index', page_num=page) }}"> {{ page }} </a>
@@ -38,4 +57,5 @@
       ...
     {% endif %}
   {% endfor %}
+    </div>
 {% endblock %}

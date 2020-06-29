@@ -16,23 +16,9 @@ import re
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nerdchat.db'
 app.config['SECRET_KEY'] = os.urandom(16)
-#app.config['IMAGE_UPLOADS'] = os.getcwd()+'/static/images'
-#app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG']
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
-#if os.path.isdir(app.config['IMAGE_UPLOADS']) == False:
-#    os.mkdir(app.config['IMAGE_UPLOADS'])
-
-def allowed_image(filename):
-    if not '.' in filename:
-        return False
-    ext = filename.rsplit('.', 1)[1]
-
-    if ext.upper() in app.config['ALLOWED_IMAGE_EXTENSIONS']:
-        return True
-    else:
-        return False
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,7 +32,8 @@ class OAuth(OAuthConsumerMixin, db.Model):
 
 Topic_Article_join = db.Table('Topic_Article_join',
     db.Column('article_id', db.Integer, db.ForeignKey('article.article_id')),
-    db.Column('topic_id', db.Integer, db.ForeignKey('topics.topic_id'))
+    db.Column('topic_id', db.Integer, db.ForeignKey('topics.topic_id')),
+    db.PrimaryKeyConstraint('article_id', 'topic_id')
     )
 
 class Article(db.Model):
@@ -56,11 +43,12 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     head_image = db.Column(db.String(500))
-    joins = db.relationship('Topics', secondary=Topic_Article_join, backref= db.backref('subscribers', lazy='dynamic'))
+    topics = db.relationship('Topics', secondary=Topic_Article_join, back_populates='articles')
 
 class Topics(db.Model):
     topic_id = db.Column(db.Integer, primary_key=True)
     topic_name = db.Column(db.String(20))
+    articles = db.relationship('Article', secondary=Topic_Article_join, back_populates='topics')
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -115,10 +103,12 @@ def landing():
 
 @app.route('/home/<int:page_num>')
 def index(page_num):
-    page_name = 'Articles'
-    #post_page = Article.query.paginate(per_page=5, page=page_num, error_out=True)
-    post_page = Article.query.order_by(Article.article_id.desc()).paginate(per_page=5, page=page_num, error_out=True)
-    return render_template('index.html', post_page=post_page, current_user= current_user)
+    #post_page = Article.query.join(Topics, Article.topics).order_by(Article.article_id.desc()).paginate(per_page=5, page=page_num, error_out=True)
+    #post_page = Article.query.order_by(Article.article_id.desc()).paginate(per_page=5, page=page_num, error_out=True)
+    query = Article.query.join(Topics, Article.topics)
+    post_page = query.order_by(Article.article_id.desc()).paginate(per_page=5, page=page_num, error_out=True)
+    topics_variable = Topics.query.all()
+    return render_template('index.html', post_page=post_page, current_user= current_user, topicslist=topics_variable)
 
 @app.route('/logout')
 @login_required
@@ -138,22 +128,24 @@ def Write_Article():
         subjects = re.split('::', request.form['subjects'])
         image_link = request.form['image']
         new_post = Article(author = author, title = post_title, content = post_content, head_image=image_link)
-        db.session.add(new_post)
         for x in subjects:
-            single_subject = Topics.query.filter_by(topic_name=x).all()
-            if single_subject == '':
-                db.session.add(Topics(topic_name = x))
-                x.subscribers.append(new_post)
+            new_subjects = Topics(topic_name = x)
+            new_post.topics.append(new_subjects)
 
-            else:
-                x.subscribers.append(new_post)
-
+        db.session.add(new_post)
         db.session.commit()
+        # new_post = Article.query.filter_by(title = post_title).first()
 
         return redirect(url_for('index', page_num=1))
 
     else:
         return render_template('Write-Article.html', page_name = 'New Post')
+
+@app.route('/article_topics/<string:name>')
+def search_articles_by_topics(name):
+    in_function_topic_variable = Topics(topic_name=name)
+    return render_template('index.html', post_page=in_function_topic_variable.article_topics, current_user= current_user)
+
 
 
 @app.route('/articles/<int:id>/edit', methods = ['GET', 'POST'])
