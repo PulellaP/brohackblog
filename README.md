@@ -1,5 +1,3 @@
-#Git Bro's Blog Software
-
 ## Overview 
 This is the software that my brother (Rosario Pulella) and I (Pasquale Pulella) will be using as our blog.
 
