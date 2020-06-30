@@ -11,9 +11,9 @@ This is the software that my brother (Rosario Pulella) and I (Pasquale Pulella) 
 
 ## Environment Variables
 environment variables can be found on config.py. You can use the config file if you don't want to use environemnt variables.
-DATABASE_STRING = enter string to tell the program where the database is
-GITHUB_CLIENT_ID = Client id for the github oauth login
-GITHUB_CLIENT_SECRET = Client secret for github's oauth
+1. DATABASE_STRING = enter string to tell the program where the database is
+2. GITHUB_CLIENT_ID = Client id for the github oauth login
+3. GITHUB_CLIENT_SECRET = Client secret for github's oauth
 
 ## Status
 The project is still in development and its kind of buggy but is very close to completion. 
