@@ -154,10 +154,21 @@ def search_articles_by_topics(name):
 def Edit_Articles(id):
     article = Article.query.filter_by(article_id=id).first()
     if request.method == 'GET' and current_user.username == article.author:
-        return render_template('edit.html', content = article.content, title = article.title, author = article.author, id = id)
+        subjects = (x.topic_name for x in article.topics)
+        subjects = "::".join(subjects)
+        return render_template('edit.html', content = article.content, image = article.head_image, subjects = subjects, title = article.title, author = article.author, id = id)
 
     if request.method == 'POST' and current_user.username == article.author:
         article.content = request.form['content']
+        article.head_image = request.form['image']
+        if request.form['subjects'] == None:
+            article.topics = ''
+        else:
+            subjects = re.split('::', request.form['subjects'])
+            for x in subjects:
+                new_subjects = Topics(topic_name = x)
+                article.topics.append(new_subjects)
+
         db.session.commit()
         return redirect(url_for('display_article', id=id))
 

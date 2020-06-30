@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block body %}
-<h1>Edit {{title}} By: {{author}} </h1>
+<h1>Edit Article </h1>
+<h2>{{title}} </h2>
+<p> By: {{author}} </p>
 <div class="form-group">
   <label for="content">
     <h5>
@@ -14,11 +16,18 @@
   </label>
   <form action="/articles/{{id}}/edit" method="POST" enctype="multipart/form-data">
     <textarea class="form-control" name="content" id="content" placeholder="{{ content }}" aria-label="Enter Content" rows="3"> {{content}}</textarea>
+    <h5>
+      Article Banner Image:
+    </h5>
+    <input class="form-control" type="text" name="image" id="image" value="{{ image }}" aria-label="Add link to an image">
+    <br>
+    <h5>
+      Type you're article subjects seperated by doubble colons without spaces ::
+    </h5>
+    <input class="form-control" type="text" name="subjects" id="subjects" value="{{ subjects }}" aria-label="Enter subjects">
+    <br>
 </div>
 <br>
-Select image to upload:
-  <input type="file" name="myImage" id="fileToUpload">
-  <br>
 <input type="submit" value="Post">
 </form>
 {% endblock %}

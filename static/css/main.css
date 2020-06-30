@@ -3,6 +3,16 @@ h1 {
   color: #39FF14;
 }
 
+h2 {
+  font-family: 'Press Start 2P';
+  color: #39FF14;
+}
+
+h5 {
+  font-family: 'Source Code Pro', monospace;
+  color: #39FF14;
+}
+
 .main-logo {
   font-family: 'Press Start 2P';
   color: #39FF14;
