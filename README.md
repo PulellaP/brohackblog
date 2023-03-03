@@ -1,5 +1,5 @@
 ## Overview 
-This is the software that my brother (Rosario Pulella) and I (Pasquale Pulella) will be using as our blog.
+This is the software was intended to be used as a tech blog that my brother (Rosario Pulella) and I (Pasquale Pulella) would have used as our blog. We changed our mind about the blog and thus the project is no longer being developed. The code is still available for demonstration purposes.
 
 ## Dependencies
 1. python
@@ -16,4 +16,4 @@ environment variables can be found on config.py. You can use the config file if 
 3. GITHUB_CLIENT_SECRET = Client secret for github's oauth
 
 ## Status
-The project is still in development and its kind of buggy but is very close to completion. 
+The project was still in development when it ended, and its kind of buggy but was very close to completion. 
